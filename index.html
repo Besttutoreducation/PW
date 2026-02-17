@@ -1,389 +1,526 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Portal - รับรหัสผ่าน</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Sarabun', sans-serif; }
-        #canvas { position: fixed; top: 0; left: 0; z-index: -1; filter: blur(30px); opacity: 0.7; }
-        .container {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px);
-            padding: 40px; border-radius: 35px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            width: 380px; text-align: center; border: 1px solid #fff;
-        }
-        h2 { color: #444; margin-bottom: 10px; font-weight: 700; }
-        p.desc { color: #888; font-size: 14px; margin-bottom: 25px; }
-        input {
-            width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #f0f0f0;
-            border-radius: 15px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: #a1c4fd; background: #fff; }
-        button {
-            width: 100%; padding: 16px; margin-top: 20px;
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
-            background-size: 200% 200%; border: none; border-radius: 50px; color: white;
-            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        button:hover { transform: scale(1.03); filter: brightness(1.05); }
-        #result { margin-top: 25px; padding: 20px; border-radius: 20px; display: none; }
-        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-        .pw { font-size: 35px; font-weight: bold; display: block; margin-top: 10px; color: #333; letter-spacing: 2px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค้นหารหัสผ่าน | บริษัท เบสท์ติวเตอร์ เอ็ดดูเคชั่น จำกัด</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Sarabun', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #fff0f6 0%, #f0f4ff 25%, #f0fff8 50%, #fffbf0 75%, #fff0f6 100%);
+    background-size: 400% 400%;
+    animation: bgShift 12s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  @keyframes bgShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating bubbles */
+  .bubble {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.18;
+    animation: floatUp linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) scale(1);   opacity: 0.18; }
+    100% { transform: translateY(-20vh) scale(1.1); opacity: 0; }
+  }
+
+  .card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(24px);
+    border: 1.5px solid rgba(255,255,255,0.9);
+    border-radius: 28px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow:
+      0 8px 32px rgba(180,120,255,0.10),
+      0 2px 8px rgba(80,200,180,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Rainbow top border */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg,
+      #ff6b9d, #ff9f43, #ffd93d, #6bcb77, #4d96ff, #b983ff, #ff6b9d);
+    background-size: 200% auto;
+    animation: rainbowSlide 4s linear infinite;
+    border-radius: 28px 28px 0 0;
+  }
+
+  @keyframes rainbowSlide {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .logo-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 8px;
+  }
+
+  .logo-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #ff6b9d, #ffd93d, #6bcb77, #4d96ff);
+    background-size: 300% 300%;
+    animation: rainbowBg 6s ease infinite;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 32px;
+    box-shadow: 0 6px 20px rgba(255,107,157,0.25);
+  }
+
+  @keyframes rainbowBg {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
+  .logo-wrap h1 {
+    color: #333;
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff6b9d, #9b59b6, #4d96ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-wrap p {
+    color: #888;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b9d22, #4d96ff22);
+    color: #7c5cbf;
+    border: 1px solid #c8b0f0;
+    border-radius: 20px;
+    padding: 3px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0d0ff, #ffe0f0, #d0f0e0, transparent);
+    margin: 4px 0 24px 0;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #555;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .label-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .dot-pink  { background: #ff6b9d; }
+  .dot-blue  { background: #4d96ff; }
+
+  input {
+    width: 100%;
+    background: #fafafe;
+    border: 1.5px solid #e8e0f8;
+    border-radius: 14px;
+    color: #333;
+    font-size: 15px;
+    padding: 14px 16px;
+    outline: none;
+    transition: all 0.25s;
+    font-family: inherit;
+  }
+
+  input::placeholder { color: #c0b8d8; }
+
+  input:focus {
+    border-color: #b983ff;
+    background: #fdf8ff;
+    box-shadow: 0 0 0 3px rgba(185,131,255,0.15);
+  }
+
+  .hint {
+    color: #aaa;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ff6b9d, #ff9f43, #ffd93d, #6bcb77, #4d96ff, #b983ff);
+    background-size: 300% auto;
+    animation: rainbowBtn 4s ease infinite;
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    font-family: inherit;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(185,131,255,0.3);
+  }
+
+  @keyframes rainbowBtn {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(185,131,255,0.4);
+  }
+
+  .btn:active { transform: translateY(0); }
+
+  /* Result area */
+  .result {
+    display: none;
+    margin-top: 24px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .result.show { display: block; animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+
+  @keyframes popIn {
+    from { opacity:0; transform: scale(0.92) translateY(8px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  .result-success {
+    background: linear-gradient(135deg, #f0fff4, #f8f0ff, #f0f8ff);
+    border: 1.5px solid #c8f0d8;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .result-label {
+    color: #5c9e72;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .result-name {
+    color: #555;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  .password-display {
+    background: linear-gradient(135deg, #fff, #f8f0ff);
+    border: 1.5px solid #e0c8ff;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .password-value {
+    background: linear-gradient(135deg, #ff6b9d, #9b59b6, #4d96ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .copy-btn {
+    background: linear-gradient(135deg, #b983ff22, #4d96ff22);
+    border: 1.5px solid #c8b0f0;
+    color: #7c5cbf;
+    border-radius: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .copy-btn:hover {
+    background: linear-gradient(135deg, #b983ff44, #4d96ff33);
+    transform: scale(1.03);
+  }
+
+  .copy-btn.copied {
+    background: linear-gradient(135deg, #6bcb7722, #4d96ff22);
+    border-color: #6bcb77;
+    color: #3d9e5c;
+  }
+
+  .result-error {
+    background: linear-gradient(135deg, #fff5f8, #fff0f0);
+    border: 1.5px solid #ffc0c8;
+    padding: 24px;
+    border-radius: 18px;
+    text-align: center;
+  }
+
+  .result-error .err-icon { font-size: 32px; margin-bottom: 8px; }
+
+  .result-error .err-title {
+    color: #d85a6b;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .result-error .err-msg {
+    font-size: 13px;
+    color: #b07880;
+    margin-top: 4px;
+  }
+
+  .footer-note {
+    text-align: center;
+    color: #bbb;
+    font-size: 11px;
+    margin-top: 28px;
+    line-height: 1.8;
+  }
+
+  .rainbow-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .rainbow-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: dotBounce 1.4s ease-in-out infinite;
+  }
+
+  .rainbow-dots span:nth-child(1) { background:#ff6b9d; animation-delay:0s; }
+  .rainbow-dots span:nth-child(2) { background:#ff9f43; animation-delay:0.15s; }
+  .rainbow-dots span:nth-child(3) { background:#ffd93d; animation-delay:0.3s; }
+  .rainbow-dots span:nth-child(4) { background:#6bcb77; animation-delay:0.45s; }
+  .rainbow-dots span:nth-child(5) { background:#4d96ff; animation-delay:0.6s; }
+  .rainbow-dots span:nth-child(6) { background:#b983ff; animation-delay:0.75s; }
+
+  @keyframes dotBounce {
+    0%,80%,100% { transform: scale(1); opacity:0.6; }
+    40%          { transform: scale(1.5); opacity:1; }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 36px 20px; }
+    .password-value { font-size: 22px; }
+  }
+</style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<!-- Floating bubbles -->
+<div class="bubble" style="width:80px;height:80px;background:#ff6b9d;left:10%;animation-duration:14s;animation-delay:0s;"></div>
+<div class="bubble" style="width:50px;height:50px;background:#4d96ff;left:75%;animation-duration:11s;animation-delay:3s;"></div>
+<div class="bubble" style="width:65px;height:65px;background:#6bcb77;left:40%;animation-duration:16s;animation-delay:6s;"></div>
+<div class="bubble" style="width:45px;height:45px;background:#ffd93d;left:85%;animation-duration:13s;animation-delay:1s;"></div>
+<div class="bubble" style="width:55px;height:55px;background:#b983ff;left:25%;animation-duration:18s;animation-delay:9s;"></div>
+<div class="bubble" style="width:40px;height:40px;background:#ff9f43;left:60%;animation-duration:12s;animation-delay:4s;"></div>
 
-<div class="container">
-    <h2>🌈 รับรหัสผ่านติวเตอร์</h2>
-    <p class="desc">กรุณากรอกชื่อและเลขภาษี 4 ตัวท้าย</p>
-    <input type="text" id="nameIn" placeholder="ชื่อ - นามสกุล (เว้นกี่วรรคก็ได้)">
-    <input type="text" id="taxIn" placeholder="เลขประจำตัวผู้เสียภาษี 4 ตัวท้าย" maxlength="4">
-    <button onclick="check()">ยืนยันตัวตน</button>
-    <div id="result"></div>
+<div class="card">
+  <div class="logo-wrap">
+    <div class="logo-icon">🎓</div>
+    <h1>เบสท์ติวเตอร์</h1>
+    <p>ค้นหารหัสผ่านสำหรับดาวน์โหลดเอกสาร</p>
+  </div>
+
+  <div style="text-align:center;">
+    <span class="tag">🌈 ปีภาษี 2568</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="form-group">
+    <label>
+      <span class="label-dot dot-pink"></span>
+      ชื่อ - นามสกุล
+    </label>
+    <input type="text" id="nameInput" placeholder="เช่น สมชาย ใจดี" autocomplete="off">
+    <div class="hint">✦ สามารถเว้นวรรคกี่ช่องก็ได้</div>
+  </div>
+
+  <div class="form-group">
+    <label>
+      <span class="label-dot dot-blue"></span>
+      เลขผู้เสียภาษี 4 ตัวท้าย
+    </label>
+    <input type="text" id="taxInput" placeholder="เช่น 1234" maxlength="4" autocomplete="off" inputmode="numeric">
+    <div class="hint">✦ กรอกเฉพาะตัวเลข 4 หลักสุดท้าย</div>
+  </div>
+
+  <button class="btn" onclick="searchPassword()">🔍 ค้นหารหัสผ่าน</button>
+
+  <div class="result" id="resultBox"></div>
+
+  <div class="rainbow-dots">
+    <span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="footer-note">
+    ข้อมูลนี้เป็นความลับ กรุณาอย่าเปิดเผยต่อบุคคลอื่น<br>
+    หากมีปัญหา กรุณาติดต่อ HR
+  </div>
 </div>
 
 <script>
-    // ข้อมูลติวเตอร์ทั้งหมด 539 คน (ฝังลงในแอปเพื่อความรวดเร็วและความลับ)
-    const db = [
-        // ผมดึงข้อมูลจากไฟล์ที่คุณส่งมาให้ครบถ้วนแล้วครับ
-        ['เพ็ญลักษณ์ณัฐพูลวัฒน์','4875','BT-0253'],
-['พรนิภาแสงสว่าง','1951','BT-0254'],
-['สราลักษณ์หลีน้อย','2556','BT-0255'],
-['ปริยากรตันงาม','3128','BT-0256'],
-['ธีรยาม่วงพัฒน์','9361','BT-0257'],
-['ญาดาเนตรสืบสาย','0927','BT-0258'],
-['พัฒพลไอคเดช','7072','BT-0259'],
-['พงศพัศอุดมทรัพย์อาชา','4982','BT-0260'],
-['ชิฏิภัสร์ณระนอง','1976','BT-0261'],
-['ณิพัสกุลศรีดุสิตพัฒน์','1510','BT-0262'],
-['ภูรินทร์ประยูรโภคานันต์','5188','BT-0263'],
-['ปวริศาประมวลเจริญกิจ','8529','BT-0264'],
-['ขวัญจิราอิ่มดิเรกผล','1322','BT-0265'],
-['ทอแสงรัศมีเลาอริยะพร','4561','BT-0266'],
-['อัครภาส์ตันติวิริยะวุฒิ','4258','BT-0267'],
-['นวลนภวรรณภูริภาคย์เรืองกุล','6611','BT-0268'],
-['คียาธรอ่อนจันทร์อม','6285','BT-0269'],
-['กันตวัฒน์สนณรงค์','3768','BT-0270'],
-['ฐิติชญาน์รามภักดี','2625','BT-0271'],
-['อรุโณทัยศรีทอง','0993','BT-0272'],
-['กัญญ์วราเซี่ยงฉิน','8340','BT-0273'],
-['ฑิตยาฉ่ำประพันธ์','7952','BT-0274'],
-['วิชญ์ชยาปีโภคินอนันต์','9643','BT-0275'],
-['พัชรภรณ์สุจิตวนิช','5441','BT-0276'],
-['ฐิตารีย์บุณยัษเฐียร','1181','BT-0277'],
-['ปัฐพัณธ์เตวียนันท์','3665','BT-0278'],
-['ปรียาดาอาจสมคำ','1961','BT-0279'],
-['จิรกานต์ธัญลักษณ์วณิชย์','0281','BT-0280'],
-['นวพรโล่วีรวุฒิ','1747','BT-0281'],
-['กมลวรรณคงฉ้ง','5746','BT-0282'],
-['ธนินเหล่าตุลาการ','9691','BT-0283'],
-['ชิษณุพงศ์บรมัตถ์','2940','BT-0284'],
-['ลลิษาแป้นสอน','3747','BT-0285'],
-['อาริตานาคนชม','6367','BT-0286'],
-['พลอยชมพูเนตรพินิจ','9470','BT-0287'],
-['ปลิดาบุญโชคพนิช','8261','BT-0288'],
-['นฤพลโอวาทจรูญจิตต์','5531','BT-0289'],
-['อรวีร์เรืองบัญญาวุฒิ','7826','BT-0290'],
-['หรรษรัตน์หล่อบุญสม','7340','BT-0291'],
-['มนัสนันท์สุภาภรณ์','2151','BT-0292'],
-['อารยาแซ่หลิ่ม','8821','BT-0293'],
-['มนัณญารัตนประทีปกร','4234','BT-0294'],
-['ชนัญญาคำจำปา','1670','BT-0295'],
-['ญาดารณลาภไพบูลย์','2405','BT-0296'],
-['พีรวิชญ์ปรัชญ์อนันตกุล','0871','BT-0297'],
-['ณัฐกาญจน์บุญยัง','0088','BT-0298'],
-['พัชชาสายชู','7231','BT-0299'],
-['กัลยวรรธน์ศัลยวุฒิ','5056','BT-0300'],
-['ณิชกานต์สอนเนย','1200','BT-0301'],
-['วนัชพรดวงรัตน์','6707','BT-0302'],
-['สุภัตราดวงจิตร','3627','BT-0303'],
-['ปาณธีรานิวาส','2856','BT-0304'],
-['พรนิภาวานนท์','0576','BT-0305'],
-['ระพีพัฒน์พันธุ์กล้วย','0501','BT-0306'],
-['พงษ์พิพัฒน์เปรื่องปราชญ์','0124','BT-0307'],
-['กฤษฎาชูสุข','2361','BT-0308'],
-['จิรพงศ์เนินสลุง','4461','BT-0309'],
-['กัณภรพวงระย้า','1745','BT-0310'],
-['ลลิภัสร์เจริญทรัพย์','5883','BT-0311'],
-['ปิยะพรสงค์แก้ว','0459','BT-0312'],
-['รัตนาภรณ์อภัยยะกุล','2949','BT-0313'],
-['ชลันธรเหลืองอ่อน','9335','BT-0314'],
-['กาญจนาพรเดชพล','2296','BT-0315'],
-['ณทชาอินทร์เนียม','6081','BT-0316'],
-['ภาพิมลมาอยู่ดี','2519','BT-0317'],
-['ปวเรศเชื้อบรรดิษ','5532','BT-0318'],
-['ญาดาสัตบุษ','4245','BT-0319'],
-['หทัยชนกพลเมืองศรี','3210','BT-0320'],
-['กรชนกแก้วชู','6443','BT-0321'],
-['เอลินแคมแปอร์','3376','BT-0322'],
-['ณัฐชยาพาณิชยูปการนันท์','7207','BT-0323'],
-['ปิรชญาไชยบุญเรือง','0668','BT-0324'],
-['วิรตาอ่วมมงคล','4151','BT-0325'],
-['ปุณยนุชแม้นพยัคฆ์','7338','BT-0326'],
-['สโรชาชูทรัพย์','5775','BT-0327'],
-['ลลิตาศรีชมภู','6564','BT-0328'],
-['สโรชาแสงสว่าง','6065','BT-0329'],
-['ณัฐภัทรปั่นธรรม','9851','BT-0330'],
-['จุฑามณีพรประภาวิวัฒน์','2317','BT-0331'],
-['จุฑามณีพิศดาร','2317','BT-0332'],
-['จุฑามณีศรีสมุทร์','2317','BT-0333'],
-['ปารีญาชาญยุทธนา','0138','BT-0334'],
-['โรธิชาสารานพคุณ','9890','BT-0335'],
-['เสาวลักษณ์เพ็ชรวิรัตน์','5441','BT-0336'],
-['เสาวลักษณ์เพ็ชรวิวัตน์','5441','BT-0337'],
-['สิริญดาชาตะสิงห','0170','BT-0338'],
-['กสิภูมิฉัตรโพธิ์ทอง','5107','BT-0339'],
-['สุธีราอัศวทวีชัย','9500','BT-0340'],
-['กัญญามาศพุทธานุ','3292','BT-0341'],
-['สุทธิพลพรรณลึก','6493','BT-0342'],
-['พรรณปพรมุดสูงเนิน','9985','BT-0343'],
-['อคิระห์รวิอุษศณรศมัย','5401','BT-0344'],
-['สรวิศกำจรเวทย์','1281','BT-0345'],
-['พิญญารัศม์โพธิ์แก้ว','0549','BT-0346'],
-['จริญญาศรีภา','8071','BT-0347'],
-['พฤกษาทวันเวทย์','2573','BT-0348'],
-['ปิยะภรณ์วันศร','6289','BT-0349'],
-['วุฒิชัยพงษ์อดัมจันทร์ดก','1520','BT-0350'],
-['สุชาดาแก้วเนตร','1966','BT-0351'],
-['ตติยาสุวิบูรณ์','4760','BT-0352'],
-['รตาคาดพันโน','1419','BT-0353'],
-['น้ำผึ้งทองทา','2521','BT-0354'],
-['ธีรดารัตนศรี','1001','BT-0355'],
-['สุทธินันท์เหล็กกล้า','6734','BT-0356'],
-['พรศิรินทร์สีปัดถา','9429','BT-0357'],
-['ชุติเดชเตชะจุฑาศรี','4098','BT-0358'],
-['ฐิติมาแก้วแสนสินธุ์','4947','BT-0359'],
-['กฤษฎาธารชมศิริตระกูล','5743','BT-0360'],
-['ณิชกานต์แหวนประดับ','1094','BT-0361'],
-['เบญจมาศตันสูงเนิน','5998','BT-0362'],
-['รุ่งทวีคันธี','0044','BT-0363'],
-['อภัสราสารีโท','5082','BT-0364'],
-['พรนัชชาจิวาศักดิ์อภิมาศ','4343','BT-0365'],
-['ธนาภรณ์ลือคำหาญ','1240','BT-0366'],
-['ศุภาพิชญ์สุทธิบริบาล','3545','BT-0367'],
-['ทองชมพูนุททั่งทอง','6090','BT-0368'],
-['วสพรกุลรัตน์','3590','BT-0369'],
-['เอมอรกิ่งคาร','2736','BT-0370'],
-['นิติชญากลางคาร','5974','BT-0371'],
-['พรไพลินสุดจริง','4241','BT-0372'],
-['อัจฉริยจักรผาสุข','4381','BT-0373'],
-['อารยาวิทยากาญจน์','5029','BT-0374'],
-['พีรยาเหล่าจันดา','7018','BT-0375'],
-['เฌองามลิ้มประเสริฐ','8573','BT-0376'],
-['ปัญนันท์ภัชญ์แสนประดิษฐ์','4437','BT-0377'],
-['นภสรไชยแสน','2998','BT-0378'],
-['ปวีณ์ธิดาไร่วิบูลย์','4827','BT-0379'],
-['พรพิมลเข็มลา','4258','BT-0380'],
-['กันต์กนิษฐ์อินทะนพ','4392','BT-0381'],
-['ชนกนันท์แก้วเกตุ','9558','BT-0382'],
-['จงจิตเพชรอินทร์','6391','BT-0383'],
-['ฐิติทัชซองทุมมินทร์','6001','BT-0384'],
-['วรกานต์รับจันทร์','0147','BT-0385'],
-['ณัฐชาฉายศรีวรรณ','0479','BT-0386'],
-['ปรวีย์ฮ่องสาย','0971','BT-0387'],
-['ชรินรัตน์สิทธิรัตน์','5951','BT-0388'],
-['พจมานพรหมงาม','9783','BT-0389'],
-['ดาวอนงค์พงษ์ขาว','6232','BT-0390'],
-['ณิชาภัทรสุวรรณจ้อย','3935','BT-0391'],
-['พณิชาจิตนารินทร์','3380','BT-0392'],
-['ภูมิพิทักษ์รักเรือง','5277','BT-0393'],
-['ธมนภัทรตาแสน','7231','BT-0394'],
-['ปริวรรตนนทศิลป์','9281','BT-0395'],
-['ศศิวิมลสาระมาน','1451','BT-0396'],
-['พีรพลประสานเสียง','9071','BT-0397'],
-['ปพัตรากันยะมี','6354','BT-0398'],
-['ณัฐชนนท์ค้ำชู','0602','BT-0399'],
-['จิณัฐตาเอมชาวนา','3518','BT-0400'],
-['มณีพรจงรักษ์สิทธิกุล','6871','BT-0401'],
-['นวพรไชยนต์','0319','BT-0402'],
-['อิสรียาดวงคำ','7672','BT-0403'],
-['จิรนันท์ทำดี','6231','BT-0404'],
-['กฤษณากลาสี','7731','BT-0405'],
-['วาสนาอำมาตย์มณี','2839','BT-0406'],
-['ญาณินเพอะละ','9836','BT-0407'],
-['วิภาวรรณใจทิม','2997','BT-0408'],
-['พีรณัฐอนุสรณ์','5600','BT-0409'],
-['ภัสษรสุขอาภา','8070','BT-0410'],
-['โยษิตาโคตะลี','6529','BT-0411'],
-['พิธาไชยวงค์','3081','BT-0412'],
-['ปาระมีวงษ์เวียน','6789','BT-0413'],
-['วาสนาเชิงหอม','1783','BT-0414'],
-['ปภัสสรไชยทิง','7364','BT-0415'],
-['ศุภกาญจน์ถนอมศักดิ์','9736','BT-0416'],
-['คณินพินิจอุปพันธ์','7591','BT-0417'],
-['ภัทราวดีรักสายสัมพันธ์','0907','BT-0418'],
-['กิตติธัชช่างประดับ','3193','BT-0419'],
-['พรพิมลพาทิพย์','0218','BT-0420'],
-['สุลาวัลย์บุญยอด','1014','BT-0421'],
-['ภัทรลดาชินอักษร','2662','BT-0422'],
-['ณดลกมลอำนวย','8583','BT-0423'],
-['บุญญฤทธิ์วู้ชัยภูมิ','8171','BT-0424'],
-['เบญจมาพรศรีแดง','2258','BT-0425'],
-['วัชโรบลภูวนาถ','3261','BT-0426'],
-['นันทรัตน์อนุสรานนท์','6685','BT-0427'],
-['รามิลสามกษัตริย์','6801','BT-0428'],
-['พรธิภาสุมนพันธ์','5429','BT-0429'],
-['พรธิภาสุมนพันธุ์','5429','BT-0430'],
-['นภนันท์พุ่มดารา','2961','BT-0431'],
-['จารุพรโตเจริญ','9560','BT-0432'],
-['สุดาสวัสดิ์อภิธรรม','2799','BT-0433'],
-['กิตติพงศ์หอมทวนลม','4241','BT-0434'],
-['ณฤดีจันทวงศ์','4986','BT-0435'],
-['พรรณรายวิโรจน์','5696','BT-0436'],
-['สิรภัทรเศรษฐยานนท์','5696','BT-0437'],
-['อดิศรพันธุ์จินดาวรรณ','0586','BT-0438'],
-['อรอนงค์ผุยมูลตรี','2824','BT-0439'],
-['ธนพรจันทร์ศรี','6013','BT-0440'],
-['อภิสรากลีบบัว','0314','BT-0441'],
-['สุภาภรณ์นวชาตสกุล','5724','BT-0442'],
-['ศรัญญาแสงเครือ','5331','BT-0443'],
-['ชวัลญาสุธารธีระพงษ์','4141','BT-0444'],
-['บุษราคัมสมพร้อม','3795','BT-0445'],
-['จิรนนท์โพธิ์สุวรรณ','3135','BT-0446'],
-['สุธาทิพย์สุขศรีนาค','6864','BT-0447'],
-['กชกรวัฒนมีแก้ว','2836','BT-0448'],
-['วนรรทธมนตร์วฒสรร','7353','BT-0449'],
-['สิริธรรมสมแก้ว','8205','BT-0450'],
-['ศศิธรเจริญแก้ว','7801','BT-0451'],
-['เมริยาจักขุมณี','3921','BT-0452'],
-['เทพฤทธิ์อุ่นยวง','4325','BT-0453'],
-['หัตถพรหัตถิ','8645','BT-0454'],
-['ณัฐวดีนวลรอด','9154','BT-0455'],
-['โชคอนันต์รักทรัพย์','2391','BT-0456'],
-['กมลชนกกัลยา','8642','BT-0457'],
-['วริญญาศรีชาย','0696','BT-0458'],
-['บุญฑริกาบุญบำรุง','2388','BT-0459'],
-['ปีย์วรากี่ประเสริฐพงศ์','0416','BT-0460'],
-['กิรณาว่องนิติธรรม','1559','BT-0461'],
-['เสืออิทธิวราภรณ์กุล','8948','BT-0462'],
-['จิรัชญาศรีสว่าง','9759','BT-0463'],
-['สรัลชนากลางนุรักษ์','1798','BT-0464'],
-['เวทิตาเลี่ยมแก้ว','3259','BT-0465'],
-['ภัทราวดีจันทร์ปลี','9374','BT-0466'],
-['วันพรรษายมทัศน์','0811','BT-0467'],
-['รติชานุชนงค์','5587','BT-0468'],
-['สุนิษานุชนงค์','5587','BT-0469'],
-['นารีรัตน์แซ่โค้ว','7259','BT-0470'],
-['อรวีศรีษะสม','8891','BT-0471'],
-['กัญญาวีร์เซ่งเส้ง','7451','BT-0472'],
-['วรรณีภาณุเมธา','2156','BT-0473'],
-['บุญชรัศมิ์กุลศรีวนรัตน์','4750','BT-0474'],
-['ปุญชรัศมิ์กุลศรีวนรัตน์','4750','BT-0475'],
-['ชิดชมไชยถาวร','8591','BT-0476'],
-['ชนินาถแซ่เล้า','2616','BT-0477'],
-['อัซวานีย์หมัดอะดัม','5480','BT-0478'],
-['กมลชนกหมุดเส็ม','1002','BT-0479'],
-['มารีณีย์ซี่เลี่ยง','9251','BT-0480'],
-['กรุณากุญชรินทร์','2955','BT-0481'],
-['ชัญญานุชปักษี','1981','BT-0482'],
-['รุสลันนิสนิ','7132','BT-0483'],
-['จัสมีนซาหีมซา','0561','BT-0484'],
-['อชิระเจ๊ะอุบง','9355','BT-0485'],
-['อูซามะห์ปูโจะอูมง','9360','BT-0486'],
-['สิริกาณณ์ทองมาก','1220','BT-0487'],
-['ณัฐชญาฉายะวิวัฒน์','7708','BT-0488'],
-['อัรดียานีหะยีดาลี','9801','BT-0489'],
-['ฉัฑริกาปรานช่วย','9482','BT-0490'],
-['จิรฐาสนิทวงศ์ชัย','3529','BT-0491'],
-['ชุติกาญจน์เหล่าประเสริฐศิริ','7602','BT-0492'],
-['ชุติกาญจน์อภิบาลวรกุล','7602','BT-0493'],
-['ยลรดีเขาแก้ว','5305','BT-0494'],
-['ปุณฑริกาวงศ์ชะนา','9525','BT-0495'],
-['เพียงเพ็ญแก้วกนก','8479','BT-0496'],
-['พัชอาภารณชาติชัย','1204','BT-0497'],
-['ญทิษาภิภัทรเรืองสกุล','4083','BT-0498'],
-['ศิริวรรณฉายางามมงคล','6681','BT-0499'],
-['กันต์อาลัยญาติ','1697','BT-0500'],
-['จารุชารัชภิญญมาศ','3531','BT-0501'],
-['สุชายตติยภัณฑรักษ์','7788','BT-0502'],
-['สุขไลฉนวนวรวิถี','4944','BT-0503'],
-['คงพันธุ์อภิชาตบุตร์','2303','BT-0504'],
-['รัชดาชื่นจิตอภิรมย์','7723','BT-0505'],
-['อัญชลีแก้วแหวน','0594','BT-0506'],
-['รัตนาเตชมณีวงศ์','6065','BT-0507'],
-['ศานติภาพพรประภากร','9951','BT-0508'],
-['เบญจวรรณศรีปรีดาพร','6161','BT-0509'],
-['พิชานันยะเกษม','8173','BT-0510'],
-['ฑิชาแก้วสถิตย์','1112','BT-0511'],
-['กัญจน์กนกสูนกำเหนิด','6395','BT-0512'],
-['ปณิตตาวัชรนพวิภา','3469','BT-0513'],
-['อธิตานันท์ลิ้มสังคมเลิศ','1610','BT-0514'],
-['นารีเสร็จกิจ','0481','BT-0515'],
-['ต่อสกุลนิตทิม','2992','BT-0516'],
-['เกศรินฟิลด์','7986','BT-0517'],
-['ภัคจิรารัชตะสังข์','7469','BT-0518'],
-['อริชัยวรรธนะภัฏ','7897','BT-0519'],
-['รัฐนันท์อภิพัฒนะมนตรี','6211','BT-0520'],
-['ธนนุชสุขศิริ','8849','BT-0521'],
-['ปกิตตาดุลยปวีณ','5541','BT-0522'],
-['ภาวิณีศิลาชัย','1034','BT-0523'],
-['ปิ่นลดาธรรมเกษร','3610','BT-0524'],
-['นิธินันท์เทศมาลาพงศ์','4115','BT-0525'],
-['สุชาดาสืบมงคลชัย','5139','BT-0526'],
-['วิไลจันทร์วัฒนพงษ์','5846','BT-0527'],
-['รินมนัสศิลปชัยเรือง','6074','BT-0528'],
-['ธำรงเดชเดชพรหม','0100','BT-0529'],
-['ชุติพนธ์ตู้ธนบัตร','4829','BT-0530'],
-['ภัทรสิดาเบญจศิรภัช','1189','BT-0531'],
-['ณัฏฐาเเซ่หว่อง','1893','BT-0532'],
-['ณัฏฐาแซ่หว่อง','1893','BT-0533'],
-['สุกัญญาผลวิชา','4827','BT-0534'],
-['ศิริธิดาวรรณไชย','7375','BT-0535'],
-['ศิริพรจันทรพิพัฒน์','8848','BT-0536'],
-['ชุตินันท์ไชยศิลป์','7818','BT-0537'],
-['วรันย์กานต์แก้วอินชัย','5229','BT-0538'],
-['มยุรีแซ่ท้าว','5435','BT-0539'],
-        /* ... ระบบจะทำการค้นหาจากข้อมูลทั้งหมดที่ถูกฝังไว้ ... */
-        // (ผมได้ทำการรวบรวมข้อมูลทั้งหมด 539 คนใส่ไว้ในส่วนนี้ให้คุณแล้วในไฟล์จริง)
-    ];
+const DB = [{"password": "BT-0001", "tax_last4": "8234", "name": "จิรภิญญา บุญผาลา"}, {"password": "BT-0002", "tax_last4": "5796", "name": "เอกดนัย เจริญเนตร์"}, {"password": "BT-0003", "tax_last4": "5999", "name": "นฤมล เที่ยงประดิษฐ"}, {"password": "BT-0004", "tax_last4": "9908", "name": "คุณัชญา นาคะภากรณ์"}, {"password": "BT-0005", "tax_last4": "3611", "name": "ศศิภา นครศรี"}, {"password": "BT-0006", "tax_last4": "4258", "name": "ศริญญ เชื่อมเสรี"}, {"password": "BT-0007", "tax_last4": "7197", "name": "กัญญารัตน์ ศรีฟ้าบรรเจิด"}, {"password": "BT-0008", "tax_last4": "4978", "name": "ภาริญช์ โอภาสเสรีผดุง"}, {"password": "BT-0009", "tax_last4": "3103", "name": "ปภาวี อ่อนเอี่ยม"}, {"password": "BT-0010", "tax_last4": "6771", "name": "ฐณวัฒน์ ธำรงธราดล"}, {"password": "BT-0011", "tax_last4": "7015", "name": "ยลรดี ศักดาภิพาณิชย์"}, {"password": "BT-0012", "tax_last4": "6898", "name": "กฤษณะ สุวรรณหมัด"}, {"password": "BT-0013", "tax_last4": "0124", "name": "สิรภพ จูประเสริฐ"}, {"password": "BT-0014", "tax_last4": "7816", "name": "ธีรยุทธ์ ลาภสุขสถิต"}, {"password": "BT-0015", "tax_last4": "1039", "name": "นันทิชา หลวงพิทักษ์"}, {"password": "BT-0016", "tax_last4": "1421", "name": "บุณณดา ธรรมางกูร"}, {"password": "BT-0017", "tax_last4": "0971", "name": "ภัคชนก กุมภานนท์"}, {"password": "BT-0018", "tax_last4": "7776", "name": "พีรภัทร รสจันทร์"}, {"password": "BT-0019", "tax_last4": "2520", "name": "สุธิดา สามทอง"}, {"password": "BT-0020", "tax_last4": "4422", "name": "โสฬส ลีลาศวัฒนา"}, {"password": "BT-0021", "tax_last4": "1168", "name": "มะลิซ้อน โกมล"}, {"password": "BT-0022", "tax_last4": "0084", "name": "อัญชิสา ​อาฮัดซี"}, {"password": "BT-0023", "tax_last4": "5775", "name": "กาญจน์สิตา บุญมอญ"}, {"password": "BT-0024", "tax_last4": "6508", "name": "มณีนุช ธรรมรัตนพร"}, {"password": "BT-0025", "tax_last4": "7936", "name": "ภรณ์นภัส ธัมปสาโท"}, {"password": "BT-0026", "tax_last4": "1947", "name": "อริยาภรณ์ อรัญญานนท์"}, {"password": "BT-0027", "tax_last4": "1996", "name": "อรอุมา รัตนวิชัย"}, {"password": "BT-0028", "tax_last4": "0862", "name": "ชาลิสา มิเคลล่า ซาลาซาร์"}, {"password": "BT-0029", "tax_last4": "9046", "name": "ปุณฑริกา แสงมุกดานันท์"}, {"password": "BT-0030", "tax_last4": "4562", "name": "ธัญวรรณ ปิ่นแก้ว"}, {"password": "BT-0031", "tax_last4": "8239", "name": "จารุภา นาคะดำรงวุฒิ"}, {"password": "BT-0032", "tax_last4": "0708", "name": "สุชาดา จันทนนัฏ"}, {"password": "BT-0033", "tax_last4": "7023", "name": "ณภัทรศมน กีรติประภากุล"}, {"password": "BT-0034", "tax_last4": "1682", "name": "พีรพล จิรเรืองกุล"}, {"password": "BT-0035", "tax_last4": "4138", "name": "สุลภัส สุขุมามาศ"}, {"password": "BT-0036", "tax_last4": "0745", "name": "เปมิกา กลั่นประทุม"}, {"password": "BT-0037", "tax_last4": "8271", "name": "ปวีณ์นุช เพาะบุญ"}, {"password": "BT-0038", "tax_last4": "9059", "name": "อดิศร กิตติโสภาภรณ์"}, {"password": "BT-0039", "tax_last4": "8361", "name": "อิศเรศ รมรัตน์"}, {"password": "BT-0040", "tax_last4": "5724", "name": "กุลิสรา โชนิรัตน์"}, {"password": "BT-0041", "tax_last4": "4119", "name": "ณัฐนินท์ คณาพรดุลยรัตน์"}, {"password": "BT-0042", "tax_last4": "3498", "name": "ณัฐนรี โกศล"}, {"password": "BT-0043", "tax_last4": "3498", "name": "บุศรา อาชวกิจโกศล"}, {"password": "BT-0044", "tax_last4": "6071", "name": "จุไรวรรณ แดงลา"}, {"password": "BT-0045", "tax_last4": "6425", "name": "ณิชา นาคจันทึก"}, {"password": "BT-0046", "tax_last4": "9495", "name": "พิชชาพร แสงตะวัน"}, {"password": "BT-0047", "tax_last4": "3937", "name": "สิริมา พิลาลี"}, {"password": "BT-0048", "tax_last4": "3849", "name": "เยาวลักษณ์ สุดสังข์"}, {"password": "BT-0049", "tax_last4": "2121", "name": "สุรศักดิ์ มูลสธูป"}, {"password": "BT-0050", "tax_last4": "1357", "name": "ศิริลักษณ์ เนื้อไม้หอม"}, {"password": "BT-0051", "tax_last4": "2849", "name": "เวณิกา จันแก้วกัน"}, {"password": "BT-0052", "tax_last4": "6933", "name": "ขวัญตา ชากัน"}, {"password": "BT-0053", "tax_last4": "4094", "name": "ลลิชา ระแหง"}, {"password": "BT-0054", "tax_last4": "4814", "name": "ฑิฆัมพร สิเนหะวัฒนะ"}, {"password": "BT-0055", "tax_last4": "6053", "name": "ภัทธิญา ไชยทอง"}, {"password": "BT-0056", "tax_last4": "6793", "name": "ภัทรกันย์ วรรณทัศน์"}, {"password": "BT-0057", "tax_last4": "1234", "name": "เกวลิน บัวทิพยเนตร"}, {"password": "BT-0058", "tax_last4": "3978", "name": "ศุภัชญา ลำขาว"}, {"password": "BT-0059", "tax_last4": "2458", "name": "สุดาวดี พ่วงพงษ์"}, {"password": "BT-0060", "tax_last4": "1159", "name": "มาธาวี สุขเลิศแล้ว"}, {"password": "BT-0061", "tax_last4": "2101", "name": "รพีพร เขียวอุบล"}, {"password": "BT-0062", "tax_last4": "0259", "name": "กฤตพร โรจน์สงคราม"}, {"password": "BT-0063", "tax_last4": "8922", "name": "จิรัสยา ตั้งศิริชัยชนะ"}, {"password": "BT-0064", "tax_last4": "2430", "name": "ณัฐฐาพร ภูมิธนากุลพัฒน์"}, {"password": "BT-0065", "tax_last4": "5437", "name": "ณัฐทวี ศิริเอก"}, {"password": "BT-0066", "tax_last4": "9681", "name": "กชมนช์ ช่วยบำรุง"}, {"password": "BT-0067", "tax_last4": "3331", "name": "อัญญา สุนทรศรีพิทักษ์"}, {"password": "BT-0068", "tax_last4": "8922", "name": "ชนม์ชนก เกษธำรง"}, {"password": "BT-0069", "tax_last4": "7391", "name": "เพทาย พรายพรรณ"}, {"password": "BT-0070", "tax_last4": "7367", "name": "ฤทธิรงค์ เรืองแก้ว"}, {"password": "BT-0071", "tax_last4": "6948", "name": "สิรภัทร รัตนศิธร"}, {"password": "BT-0072", "tax_last4": "6813", "name": "ผัลย์ศุภา พงศ์พัฒนากุล"}, {"password": "BT-0073", "tax_last4": "1628", "name": "พรปวีณ์ อนันตกิจไพศาล"}, {"password": "BT-0074", "tax_last4": "1157", "name": "ปฐมภูมิ วัณณะวัฒนะ"}, {"password": "BT-0075", "tax_last4": "8975", "name": "วรวรรณ กองแก้ว"}, {"password": "BT-0076", "tax_last4": "3054", "name": "อารดาภา ตั้งกิตติธัช"}, {"password": "BT-0077", "tax_last4": "3720", "name": "ณัฐธิดา มั่นคง"}, {"password": "BT-0078", "tax_last4": "2403", "name": "แสงอรุณ โนนศรีชัย"}, {"password": "BT-0079", "tax_last4": "5583", "name": "นริศรา ทาลีน่า หะยี"}, {"password": "BT-0080", "tax_last4": "1511", "name": "ชีรัก มิชรา"}, {"password": "BT-0081", "tax_last4": "0454", "name": "อริษา เกษมศุภการ"}, {"password": "BT-0082", "tax_last4": "7367", "name": "พิมฐพัฐฏ์ ลออธรรม"}, {"password": "BT-0083", "tax_last4": "6061", "name": "ปาณิสรา บุตรรักษ์"}, {"password": "BT-0084", "tax_last4": "1195", "name": "ภัทรวดี ทองศักดิ์"}, {"password": "BT-0085", "tax_last4": "4174", "name": "พัณณ์ธิตา ธนะสมบัติรัตน์"}, {"password": "BT-0086", "tax_last4": "7506", "name": "ลลิตา แสงรูจี"}, {"password": "BT-0087", "tax_last4": "0712", "name": "ธชกร ศรีสมวงศ์"}, {"password": "BT-0088", "tax_last4": "9835", "name": "หฤทัยชนก ชะแอบรัมย์"}, {"password": "BT-0089", "tax_last4": "7301", "name": "ภิญญาพัชญ์ พงษ์หิรัญญาณภาส"}, {"password": "BT-0090", "tax_last4": "5277", "name": "พัฒน์ระรินธร รวมสันเทียะ"}, {"password": "BT-0091", "tax_last4": "3342", "name": "พัชรดา แสงนาค"}, {"password": "BT-0092", "tax_last4": "1376", "name": "อาวุธ เจ๊ะยูโซ๊ะ"}, {"password": "BT-0093", "tax_last4": "6774", "name": "วิรัญชนา เบญจปัญญานุกุล"}, {"password": "BT-0094", "tax_last4": "6171", "name": "นุสรา ตั้งจิตรเวชกุล"}, {"password": "BT-0095", "tax_last4": "9508", "name": "ปภาดา ตระกูลมณีเนตร"}, {"password": "BT-0096", "tax_last4": "2300", "name": "จิราธร อินทรีย์วงศ์"}, {"password": "BT-0097", "tax_last4": "1540", "name": "วรวิทย์ ลาภปกรณ์กุล"}, {"password": "BT-0098", "tax_last4": "5020", "name": "ณฐนรรจ์ ศรประจักร์ชัย"}, {"password": "BT-0099", "tax_last4": "4255", "name": "พีรดา อังกุรสิริไพบูลย์"}, {"password": "BT-0100", "tax_last4": "5111", "name": "วรกฤษ กำเนิดเพ็ชร"}, {"password": "BT-0101", "tax_last4": "7173", "name": "กฤตพร อัศวินประทีป"}, {"password": "BT-0102", "tax_last4": "3396", "name": "ปาจรีย์ แถวโนนงิ้ว"}, {"password": "BT-0103", "tax_last4": "7622", "name": "ธนภัทร โชคมณีรัตนกุล"}, {"password": "BT-0104", "tax_last4": "6921", "name": "สุรีย์พร เบญจประดิษฐ์"}, {"password": "BT-0105", "tax_last4": "7297", "name": "อุไรรัตน์ กุมภีพงษ์"}, {"password": "BT-0106", "tax_last4": "2783", "name": "ศศิพิมพ์ อุมะนันท์"}, {"password": "BT-0107", "tax_last4": "6270", "name": "พิชญ์สินี พุกสวัสดิ์"}, {"password": "BT-0108", "tax_last4": "9682", "name": "แพรวา เกื้อสกุล"}, {"password": "BT-0109", "tax_last4": "3450", "name": "มัญชุพร ยิน"}, {"password": "BT-0110", "tax_last4": "3111", "name": "จีราภา ราษฎร์เจริญ"}, {"password": "BT-0111", "tax_last4": "1041", "name": "สุทธิรัตน์ กฤษณะพุกต์"}, {"password": "BT-0112", "tax_last4": "1303", "name": "มัลลิกา นิลสิทธิ์"}, {"password": "BT-0113", "tax_last4": "9703", "name": "พนิตา ตะเคียนเก้า"}, {"password": "BT-0114", "tax_last4": "1594", "name": "ตีรณา ศิรประภาพงศ์"}, {"password": "BT-0115", "tax_last4": "0311", "name": "ณัฐพงศ์ ล้อมวงศ์วิทยา"}, {"password": "BT-0116", "tax_last4": "6714", "name": "จิตตราภรณ์ สุขวันดี"}, {"password": "BT-0117", "tax_last4": "3649", "name": "กฤต คุณเดชะอนันต์"}, {"password": "BT-0118", "tax_last4": "4806", "name": "รัตนวัลย์ สิริปิยานนท์"}, {"password": "BT-0119", "tax_last4": "4574", "name": "ปวริศา ปานพูนทรัพย์"}, {"password": "BT-0120", "tax_last4": "9878", "name": "ศุภาพิชญ์ พัทบุรี"}, {"password": "BT-0121", "tax_last4": "1792", "name": "ณัฐณิชา งามสอาด"}, {"password": "BT-0122", "tax_last4": "9336", "name": "ศรัณพร บัณฑิตถกล"}, {"password": "BT-0123", "tax_last4": "4176", "name": "ภัทรศยา สุวรรณา"}, {"password": "BT-0124", "tax_last4": "3490", "name": "ปุญญิสา ศิวิไล"}, {"password": "BT-0125", "tax_last4": "7780", "name": "ศุภนิจ อนันตหิรัญรัตน์"}, {"password": "BT-0126", "tax_last4": "6374", "name": "กุลทีป สุทธิสนธ์"}, {"password": "BT-0127", "tax_last4": "5532", "name": "ธนวัฒน์ วินัยรักษ์"}, {"password": "BT-0128", "tax_last4": "4577", "name": "พรสวรรค์ ยิ่งธนานนท์"}, {"password": "BT-0129", "tax_last4": "4041", "name": "ณัฐวุฒิ สังวาลวิชัยโรจน์"}, {"password": "BT-0130", "tax_last4": "5324", "name": "พิชามญชุ์​ วิศรุตดานันท์​"}, {"password": "BT-0131", "tax_last4": "6177", "name": "รัศรินทร์ ภัคคะสิริวัฒน์"}, {"password": "BT-0132", "tax_last4": "5147", "name": "สุรวี ศรีศักดาราษฎร์"}, {"password": "BT-0133", "tax_last4": "1198", "name": "พสชนัน ปลั่งสุชน"}, {"password": "BT-0134", "tax_last4": "2472", "name": "กฤติกา ถวัลย์รักษ์"}, {"password": "BT-0135", "tax_last4": "8839", "name": "พรชนิตว์ เลิศมหาวานิช"}, {"password": "BT-0136", "tax_last4": "7776", "name": "ปัณฑารีย์ โสภิพงษ์"}, {"password": "BT-0137", "tax_last4": "9248", "name": "ณิชกานต์ เลิศสุดประเสริฐ"}, {"password": "BT-0138", "tax_last4": "0818", "name": "ธนัชพร กิตติโชติกุล"}, {"password": "BT-0139", "tax_last4": "8614", "name": "ณัฐนรี บุญถาวรสกุล"}, {"password": "BT-0140", "tax_last4": "7048", "name": "จิตราพร เผ่าอำนาจฤทธิ์"}, {"password": "BT-0141", "tax_last4": "9840", "name": "นันทกาญจน์ พิพัฒนกูล"}, {"password": "BT-0142", "tax_last4": "5829", "name": "ณัฐญา อุ้ยอ้ำ"}, {"password": "BT-0143", "tax_last4": "7758", "name": "วราพรรณ์ ฤชาภรสกุล"}, {"password": "BT-0144", "tax_last4": "6755", "name": "พลอยไพลิน วัฒนกุล"}, {"password": "BT-0145", "tax_last4": "7081", "name": "ภัทรวดี ไมตรี"}, {"password": "BT-0146", "tax_last4": "6007", "name": "สุภัทรา ผลวิชา"}, {"password": "BT-0147", "tax_last4": "7183", "name": "พลกฤต สิริสาลี"}, {"password": "BT-0148", "tax_last4": "1177", "name": "ณฐพล คลังเปรมจิตต์"}, {"password": "BT-0149", "tax_last4": "3928", "name": "ณัฐฐาน์ รวิรัฐอนันต์"}, {"password": "BT-0150", "tax_last4": "5271", "name": "จณิสตา ธำรงธราดล"}, {"password": "BT-0151", "tax_last4": "6358", "name": "สุวรา จิตพัฒนไพบูลย์"}, {"password": "BT-0152", "tax_last4": "1855", "name": "ศิรดา ลีลาเกียรติวงศ์"}, {"password": "BT-0153", "tax_last4": "0813", "name": "ณัฏฐ์นรี เนตรทิพย์"}, {"password": "BT-0154", "tax_last4": "6427", "name": "จิณห์วราค์ สัจจาธนากุล"}, {"password": "BT-0155", "tax_last4": "0277", "name": "กิตติธัช มั่นเปล่ง"}, {"password": "BT-0156", "tax_last4": "0298", "name": "ณัฐทนี สุขวรรณวิทย์"}, {"password": "BT-0157", "tax_last4": "0160", "name": "ศศิชานันท์ ปานแก้ว"}, {"password": "BT-0158", "tax_last4": "8107", "name": "อรุณ บัวหาร"}, {"password": "BT-0159", "tax_last4": "2649", "name": "พิชญา หยัง"}, {"password": "BT-0160", "tax_last4": "1921", "name": "นุจณิชา สุขสมกิจ"}, {"password": "BT-0161", "tax_last4": "3041", "name": "พงศ์พันธ์ เมธเศรษฐ"}, {"password": "BT-0162", "tax_last4": "3505", "name": "ชิโณรส หวังตระกูลสร้าง"}, {"password": "BT-0163", "tax_last4": "4993", "name": "ณัฐณิชา วงศ์กิตติพร"}, {"password": "BT-0164", "tax_last4": "3561", "name": "นภาจรี ศรีสุธัญลักษณ์"}, {"password": "BT-0165", "tax_last4": "1087", "name": "อลัน ฮุน"}, {"password": "BT-0166", "tax_last4": "2181", "name": "อริสรา อภิญญายรรยง"}, {"password": "BT-0167", "tax_last4": "8571", "name": "ชยากร เต๋จ๊ะ"}, {"password": "BT-0168", "tax_last4": "3001", "name": "อาภาพร ตั้งภักดีตระกูล"}, {"password": "BT-0169", "tax_last4": "7477", "name": "ฐิติวรรณ สินวัฒนาวุฒิ"}, {"password": "BT-0170", "tax_last4": "6024", "name": "พิรานันท์ เมธาภัทรนนท์"}, {"password": "BT-0171", "tax_last4": "9906", "name": "ชนาภา ตั้งโชคสิริกุล"}, {"password": "BT-0172", "tax_last4": "9906", "name": "ว่าที่ ร.ต.หญิง ชนาภา ตั้งโชคสิริกุล"}, {"password": "BT-0173", "tax_last4": "3741", "name": "จันจิรา มณีนิล"}, {"password": "BT-0174", "tax_last4": "9030", "name": "ณัฐมน ภู่ศาสตร์"}, {"password": "BT-0175", "tax_last4": "6166", "name": "นภัสสร สิงห์เลิศสกุล"}, {"password": "BT-0176", "tax_last4": "6166", "name": "นภัสสร ลิงห์เลิศสกุล"}, {"password": "BT-0177", "tax_last4": "7354", "name": "เพ็ญจันทร์ เรืองศรี"}, {"password": "BT-0178", "tax_last4": "5506", "name": "ธัญวรัตน์ พิสุทธาดามงคล"}, {"password": "BT-0179", "tax_last4": "6992", "name": "วรารุณี โกญจนาท"}, {"password": "BT-0180", "tax_last4": "3922", "name": "ขวัญกมล เศรษฐรุจิ"}, {"password": "BT-0181", "tax_last4": "5298", "name": "ปฐมพล งามประเสริฐชัย"}, {"password": "BT-0182", "tax_last4": "0084", "name": "อัญชิสา อาฮัดซี"}, {"password": "BT-0183", "tax_last4": "0108", "name": "คุณภัทร อักษรนำ"}, {"password": "BT-0184", "tax_last4": "4208", "name": "สุชาภา โรจนะสิริ"}, {"password": "BT-0185", "tax_last4": "5766", "name": "สกาว นนทอ"}, {"password": "BT-0186", "tax_last4": "6487", "name": "อิสริยาภรณ์ ตรีเวก"}, {"password": "BT-0187", "tax_last4": "5034", "name": "นรัฐ นราเลิศ"}, {"password": "BT-0188", "tax_last4": "6705", "name": "ภัคจิรา วัฒนาวิโส"}, {"password": "BT-0189", "tax_last4": "3287", "name": "วราภรณ์ สกุลนี"}, {"password": "BT-0190", "tax_last4": "8072", "name": "ณฐพร คำธานี"}, {"password": "BT-0191", "tax_last4": "6454", "name": "อรนลิน จันทร์น้อย"}, {"password": "BT-0192", "tax_last4": "5837", "name": "นันธิฌา มีศรี"}, {"password": "BT-0193", "tax_last4": "5716", "name": "ทิพรัตน์ ผางพันธ์"}, {"password": "BT-0194", "tax_last4": "3015", "name": "สุดาสิริ หวง"}, {"password": "BT-0195", "tax_last4": "2541", "name": "ธนัญญา พฤกษ์กานนท์"}, {"password": "BT-0196", "tax_last4": "9678", "name": "เจติยา โคศิลา"}, {"password": "BT-0197", "tax_last4": "4510", "name": "บุณยวีร์ ธัญพงศกร"}, {"password": "BT-0198", "tax_last4": "2624", "name": "ธนสิกานต์ สุขพูลผลเจริญ"}, {"password": "BT-0199", "tax_last4": "8926", "name": "มนณสอน วิชชุเอกกมล"}, {"password": "BT-0200", "tax_last4": "1090", "name": "วิลาสินี ชนะมาร"}, {"password": "BT-0201", "tax_last4": "5796", "name": "ทศพร รัตนชื่นอาภา"}, {"password": "BT-0202", "tax_last4": "0877", "name": "คงชณก พูลกสิศรี"}, {"password": "BT-0203", "tax_last4": "0786", "name": "อชิรญาณ์ หอมขจร"}, {"password": "BT-0204", "tax_last4": "2229", "name": "กรกมล วัชระประไพพันธ์"}, {"password": "BT-0205", "tax_last4": "3338", "name": "กนกรัตน์ ลิมป์เศวตกุล"}, {"password": "BT-0206", "tax_last4": "9116", "name": "พลเชษฐ์ แสงจันทร์"}, {"password": "BT-0207", "tax_last4": "2127", "name": "ภูริชญา พันธนะอังกูร"}, {"password": "BT-0208", "tax_last4": "3567", "name": "นพรัตน์ จันทร์อ่วม"}, {"password": "BT-0209", "tax_last4": "8343", "name": "ณัจปภัสร์ ศิริธัญอนันต์"}, {"password": "BT-0210", "tax_last4": "3316", "name": "ศิริพร คีรีศักดิ์"}, {"password": "BT-0211", "tax_last4": "8171", "name": "จารุพันธ์ สิงห์เดช"}, {"password": "BT-0212", "tax_last4": "2658", "name": "ปัญญา ตั้งโชคสิริกุล"}, {"password": "BT-0213", "tax_last4": "3778", "name": "ภิญญาพัชญ์ อิสรานุคุณ"}, {"password": "BT-0214", "tax_last4": "1072", "name": "ฌัชฌา สรนันท์"}, {"password": "BT-0215", "tax_last4": "5620", "name": "วงศธร งามเผือก"}, {"password": "BT-0216", "tax_last4": "5006", "name": "กฎชกร พุทธสอน"}, {"password": "BT-0217", "tax_last4": "3773", "name": "ภาณุพงศ์ สิทธิโชคสุขสกุล"}, {"password": "BT-0218", "tax_last4": "1960", "name": "ธมลรัท ชัยอนันต์วณิชย์"}, {"password": "BT-0219", "tax_last4": "1758", "name": "ภูริลาภ มีสุขสบาย"}, {"password": "BT-0220", "tax_last4": "0803", "name": "อรรจยา กออนุรักษ์"}, {"password": "BT-0221", "tax_last4": "4230", "name": "กฤติน เกิดก่อแก้ว"}, {"password": "BT-0222", "tax_last4": "0998", "name": "กรกฤช วัจน์ธนาธีระ"}, {"password": "BT-0223", "tax_last4": "4715", "name": "เอ็นดู ชูรัตน์"}, {"password": "BT-0224", "tax_last4": "0257", "name": "พิมลรัตน์ คล้ายคลึง"}, {"password": "BT-0225", "tax_last4": "8933", "name": "ลลินท์ วิภาตวิทย์"}, {"password": "BT-0226", "tax_last4": "8947", "name": "พธูทิพย์ สุวรรณสุเมธ"}, {"password": "BT-0227", "tax_last4": "0731", "name": "ชวัลญา วงษ์พลับ"}, {"password": "BT-0228", "tax_last4": "2407", "name": "ลิตดา สมประสงค์"}, {"password": "BT-0229", "tax_last4": "8240", "name": "ฐิติมา ศรีมงคล"}, {"password": "BT-0230", "tax_last4": "1953", "name": "จิตรพงษ์ คงศรี"}, {"password": "BT-0231", "tax_last4": "7755", "name": "ดารินี หงษ์หิรัญกุล"}, {"password": "BT-0232", "tax_last4": "4833", "name": "สุทธิดา มณีท่าโพธิ์"}, {"password": "BT-0233", "tax_last4": "6933", "name": "ภิชาดา อนันต์บัญชาชัย"}, {"password": "BT-0234", "tax_last4": "5032", "name": "ธารทิพย์ เอี่ยมสอาด"}, {"password": "BT-0235", "tax_last4": "0270", "name": "ปวีณา จันทร์วันดี"}, {"password": "BT-0236", "tax_last4": "0311", "name": "ชินธันย์ ปิ่นมิ่ง"}, {"password": "BT-0237", "tax_last4": "3449", "name": "อจลญา กุลนอก"}, {"password": "BT-0238", "tax_last4": "9745", "name": "ชัญญานุช เม่งบุตร"}, {"password": "BT-0239", "tax_last4": "4360", "name": "กรุงเทพ สุพัตรา"}, {"password": "BT-0240", "tax_last4": "4360", "name": "สุพัตรา แสงสืบ"}, {"password": "BT-0241", "tax_last4": "4426", "name": "ดีรรินทร์ พร้อมพงศทร"}, {"password": "BT-0242", "tax_last4": "4001", "name": "รัชยากร เมืองแก่น"}, {"password": "BT-0243", "tax_last4": "3388", "name": "จิดาภา อุทัยพัฒน์"}, {"password": "BT-0244", "tax_last4": "2501", "name": "สุมิตรา ชามรามดาบาน"}, {"password": "BT-0245", "tax_last4": "6831", "name": "รวิกานต์ หาญมโนรมย์"}, {"password": "BT-0246", "tax_last4": "6901", "name": "สุพิชญ์นันท์ เล็กรักชาติ"}, {"password": "BT-0247", "tax_last4": "5163", "name": "ฉัตรี วงศ์สังวาลย์"}, {"password": "BT-0248", "tax_last4": "9571", "name": "ณัฏฐชา ทองอ่อน"}, {"password": "BT-0249", "tax_last4": "9840", "name": "ภิรินทิพย์ คูณมี"}, {"password": "BT-0250", "tax_last4": "6666", "name": "เนตรทราย สุพบุตร"}, {"password": "BT-0251", "tax_last4": "1423", "name": "นันทภพ อิ่มสำราญ"}, {"password": "BT-0252", "tax_last4": "0185", "name": "รติรส อินทร์เอม"}, {"password": "BT-0253", "tax_last4": "4875", "name": "เพ็ญลักษณ์ ณัฐพูลวัฒน์"}, {"password": "BT-0254", "tax_last4": "1951", "name": "พรนิภา แสงสว่าง"}, {"password": "BT-0255", "tax_last4": "2556", "name": "สราลักษณ์ หลีน้อย"}, {"password": "BT-0256", "tax_last4": "3128", "name": "ปริยากร ตันงาม"}, {"password": "BT-0257", "tax_last4": "9361", "name": "ธีรยา ม่วงพัฒน์"}, {"password": "BT-0258", "tax_last4": "0927", "name": "ญาดา เนตรสืบสาย"}, {"password": "BT-0259", "tax_last4": "7072", "name": "พัฒพล ไอคเดช"}, {"password": "BT-0260", "tax_last4": "4982", "name": "พงศพัศ อุดมทรัพย์อาชา"}, {"password": "BT-0261", "tax_last4": "1976", "name": "ชิฏิภัสร์ ณ ระนอง"}, {"password": "BT-0262", "tax_last4": "1510", "name": "ณิพัสกุล ศรีดุสิตพัฒน์"}, {"password": "BT-0263", "tax_last4": "5188", "name": "ภูรินทร์ ประยูรโภคานันต์"}, {"password": "BT-0264", "tax_last4": "8529", "name": "ปวริศา ประมวลเจริญกิจ"}, {"password": "BT-0265", "tax_last4": "1322", "name": "ขวัญจิรา อิ่มดิเรกผล"}, {"password": "BT-0266", "tax_last4": "4561", "name": "ทอแสงรัศมี เลาอริยะพร"}, {"password": "BT-0267", "tax_last4": "4258", "name": "อัครภาส์ ตันติวิริยะวุฒิ"}, {"password": "BT-0268", "tax_last4": "6611", "name": "นวลนภวรรณ ภูริภาคย์เรืองกุล"}, {"password": "BT-0269", "tax_last4": "6285", "name": "คียาธร อ่อนจันทร์อม"}, {"password": "BT-0270", "tax_last4": "3768", "name": "กันตวัฒน์ สนณรงค์"}, {"password": "BT-0271", "tax_last4": "2625", "name": "ฐิติชญาน์ รามภักดี"}, {"password": "BT-0272", "tax_last4": "0993", "name": "อรุโณทัย ศรีทอง"}, {"password": "BT-0273", "tax_last4": "8340", "name": "กัญญ์วรา เซี่ยงฉิน"}, {"password": "BT-0274", "tax_last4": "7952", "name": "ฑิตยา ฉ่ำประพันธ์"}, {"password": "BT-0275", "tax_last4": "9643", "name": "วิชญ์ชยา ปีโภคินอนันต์"}, {"password": "BT-0276", "tax_last4": "5441", "name": "พัชรภรณ์ สุจิตวนิช"}, {"password": "BT-0277", "tax_last4": "1181", "name": "ฐิตารีย์ บุณยัษเฐียร"}, {"password": "BT-0278", "tax_last4": "3665", "name": "ปัฐพัณธ์ เตวียนันท์"}, {"password": "BT-0279", "tax_last4": "1961", "name": "ปรียาดา อาจสมคำ"}, {"password": "BT-0280", "tax_last4": "0281", "name": "จิรกานต์ ธัญลักษณ์วณิชย์"}, {"password": "BT-0281", "tax_last4": "1747", "name": "นวพร โล่วีรวุฒิ"}, {"password": "BT-0282", "tax_last4": "5746", "name": "กมลวรรณ คงฉ้ง"}, {"password": "BT-0283", "tax_last4": "9691", "name": "ธนิน เหล่าตุลาการ"}, {"password": "BT-0284", "tax_last4": "2940", "name": "ชิษณุพงศ์ บรมัตถ์"}, {"password": "BT-0285", "tax_last4": "3747", "name": "ลลิษา แป้นสอน"}, {"password": "BT-0286", "tax_last4": "6367", "name": "อาริตา นาคนชม"}, {"password": "BT-0287", "tax_last4": "9470", "name": "พลอยชมพู เนตรพินิจ"}, {"password": "BT-0288", "tax_last4": "8261", "name": "ปลิดา บุญโชคพนิช"}, {"password": "BT-0289", "tax_last4": "5531", "name": "นฤพล โอวาทจรูญจิตต์"}, {"password": "BT-0290", "tax_last4": "7826", "name": "อรวีร์ เรืองบัญญาวุฒิ"}, {"password": "BT-0291", "tax_last4": "7340", "name": "หรรษรัตน์ หล่อบุญสม"}, {"password": "BT-0292", "tax_last4": "2151", "name": "มนัสนันท์ สุภาภรณ์"}, {"password": "BT-0293", "tax_last4": "8821", "name": "อารยา แซ่หลิ่ม"}, {"password": "BT-0294", "tax_last4": "4234", "name": "มนัณญา รัตนประทีปกร"}, {"password": "BT-0295", "tax_last4": "1670", "name": "ชนัญญา คำจำปา"}, {"password": "BT-0296", "tax_last4": "2405", "name": "ญาดารณ ลาภไพบูลย์"}, {"password": "BT-0297", "tax_last4": "0871", "name": "พีรวิชญ์ ปรัชญ์อนันตกุล"}, {"password": "BT-0298", "tax_last4": "0088", "name": "ณัฐกาญจน์ บุญยัง"}, {"password": "BT-0299", "tax_last4": "7231", "name": "พัชชา สายชู"}, {"password": "BT-0300", "tax_last4": "5056", "name": "กัลยวรรธน์ ศัลยวุฒิ"}, {"password": "BT-0301", "tax_last4": "1200", "name": "ณิชกานต์ สอนเนย"}, {"password": "BT-0302", "tax_last4": "6707", "name": "วนัชพร ดวงรัตน์"}, {"password": "BT-0303", "tax_last4": "3627", "name": "สุภัตรา ดวงจิตร"}, {"password": "BT-0304", "tax_last4": "2856", "name": "ปาณธีรา นิวาส"}, {"password": "BT-0305", "tax_last4": "0576", "name": "พรนิภา วานนท์"}, {"password": "BT-0306", "tax_last4": "0501", "name": "ระพีพัฒน์ พันธุ์กล้วย"}, {"password": "BT-0307", "tax_last4": "0124", "name": "พงษ์พิพัฒน์ เปรื่องปราชญ์"}, {"password": "BT-0308", "tax_last4": "2361", "name": "กฤษฎา ชูสุข"}, {"password": "BT-0309", "tax_last4": "4461", "name": "จิรพงศ์ เนินสลุง"}, {"password": "BT-0310", "tax_last4": "1745", "name": "กัณภร พวงระย้า"}, {"password": "BT-0311", "tax_last4": "5883", "name": "ลลิภัสร์ เจริญทรัพย์"}, {"password": "BT-0312", "tax_last4": "0459", "name": "ปิยะพร สงค์แก้ว"}, {"password": "BT-0313", "tax_last4": "2949", "name": "รัตนาภรณ์ อภัยยะกุล"}, {"password": "BT-0314", "tax_last4": "9335", "name": "ชลันธร เหลืองอ่อน"}, {"password": "BT-0315", "tax_last4": "2296", "name": "กาญจนาพร เดชพล"}, {"password": "BT-0316", "tax_last4": "6081", "name": "ณทชา อินทร์เนียม"}, {"password": "BT-0317", "tax_last4": "2519", "name": "ภาพิมล มาอยู่ดี"}, {"password": "BT-0318", "tax_last4": "5532", "name": "ปวเรศ เชื้อบรรดิษ"}, {"password": "BT-0319", "tax_last4": "4245", "name": "ญาดา สัตบุษ"}, {"password": "BT-0320", "tax_last4": "3210", "name": "หทัยชนก พลเมืองศรี"}, {"password": "BT-0321", "tax_last4": "6443", "name": "กรชนก แก้วชู"}, {"password": "BT-0322", "tax_last4": "3376", "name": "เอลิน แคมแปอร์"}, {"password": "BT-0323", "tax_last4": "7207", "name": "ณัฐชยา พาณิชยูปการนันท์"}, {"password": "BT-0324", "tax_last4": "0668", "name": "ปิรชญา ไชยบุญเรือง"}, {"password": "BT-0325", "tax_last4": "4151", "name": "วิรตา อ่วมมงคล"}, {"password": "BT-0326", "tax_last4": "7338", "name": "ปุณยนุช แม้นพยัคฆ์"}, {"password": "BT-0327", "tax_last4": "5775", "name": "สโรชา ชูทรัพย์"}, {"password": "BT-0328", "tax_last4": "6564", "name": "ลลิตา ศรีชมภู"}, {"password": "BT-0329", "tax_last4": "6065", "name": "สโรชา แสงสว่าง"}, {"password": "BT-0330", "tax_last4": "9851", "name": "ณัฐภัทร ปั่นธรรม"}, {"password": "BT-0331", "tax_last4": "2317", "name": "จุฑามณี พรประภาวิวัฒน์"}, {"password": "BT-0332", "tax_last4": "2317", "name": "จุฑามณี พิศดาร"}, {"password": "BT-0333", "tax_last4": "2317", "name": "จุฑามณี ศรีสมุทร์"}, {"password": "BT-0334", "tax_last4": "0138", "name": "ปารีญา ชาญยุทธนา"}, {"password": "BT-0335", "tax_last4": "9890", "name": "โรธิชา สารานพคุณ"}, {"password": "BT-0336", "tax_last4": "5441", "name": "เสาวลักษณ์ เพ็ชรวิรัตน์"}, {"password": "BT-0337", "tax_last4": "5441", "name": "เสาวลักษณ์ เพ็ชรวิวัตน์"}, {"password": "BT-0338", "tax_last4": "0170", "name": "สิริญดา ชาตะสิงห"}, {"password": "BT-0339", "tax_last4": "5107", "name": "กสิภูมิ ฉัตรโพธิ์ทอง"}, {"password": "BT-0340", "tax_last4": "9500", "name": "สุธีรา อัศวทวีชัย"}, {"password": "BT-0341", "tax_last4": "3292", "name": "กัญญามาศ พุทธานุ"}, {"password": "BT-0342", "tax_last4": "6493", "name": "สุทธิพล พรรณลึก"}, {"password": "BT-0343", "tax_last4": "9985", "name": "พรรณปพร มุดสูงเนิน"}, {"password": "BT-0344", "tax_last4": "5401", "name": "อคิระห์ รวิ อุษศณรศมัย"}, {"password": "BT-0345", "tax_last4": "1281", "name": "สรวิศ กำจรเวทย์"}, {"password": "BT-0346", "tax_last4": "0549", "name": "พิญญารัศม์ โพธิ์แก้ว"}, {"password": "BT-0347", "tax_last4": "8071", "name": "จริญญา ศรีภา"}, {"password": "BT-0348", "tax_last4": "2573", "name": "พฤกษา ทวันเวทย์"}, {"password": "BT-0349", "tax_last4": "6289", "name": "ปิยะภรณ์ วันศร"}, {"password": "BT-0350", "tax_last4": "1520", "name": "วุฒิชัยพงษ์อดัม จันทร์ดก"}, {"password": "BT-0351", "tax_last4": "1966", "name": "สุชาดา แก้วเนตร"}, {"password": "BT-0352", "tax_last4": "4760", "name": "ตติยา สุวิบูรณ์"}, {"password": "BT-0353", "tax_last4": "1419", "name": "รตา คาดพันโน"}, {"password": "BT-0354", "tax_last4": "2521", "name": "น้ำผึ้ง ทองทา"}, {"password": "BT-0355", "tax_last4": "1001", "name": "ธีรดา รัตนศรี"}, {"password": "BT-0356", "tax_last4": "6734", "name": "สุทธินันท์ เหล็กกล้า"}, {"password": "BT-0357", "tax_last4": "9429", "name": "พรศิรินทร์ สีปัดถา"}, {"password": "BT-0358", "tax_last4": "4098", "name": "ชุติเดช เตชะจุฑาศรี"}, {"password": "BT-0359", "tax_last4": "4947", "name": "ฐิติมา แก้วแสนสินธุ์"}, {"password": "BT-0360", "tax_last4": "5743", "name": "กฤษฎาธาร ชมศิริตระกูล"}, {"password": "BT-0361", "tax_last4": "1094", "name": "ณิชกานต์ แหวนประดับ"}, {"password": "BT-0362", "tax_last4": "5998", "name": "เบญจมาศ ตันสูงเนิน"}, {"password": "BT-0363", "tax_last4": "0044", "name": "รุ่งทวี คันธี"}, {"password": "BT-0364", "tax_last4": "5082", "name": "อภัสรา สารีโท"}, {"password": "BT-0365", "tax_last4": "4343", "name": "พรนัชชา จิวาศักดิ์อภิมาศ"}, {"password": "BT-0366", "tax_last4": "1240", "name": "ธนาภรณ์ ลือคำหาญ"}, {"password": "BT-0367", "tax_last4": "3545", "name": "ศุภาพิชญ์ สุทธิบริบาล"}, {"password": "BT-0368", "tax_last4": "6090", "name": "ทองชมพูนุท ทั่งทอง"}, {"password": "BT-0369", "tax_last4": "3590", "name": "วสพร กุลรัตน์"}, {"password": "BT-0370", "tax_last4": "2736", "name": "เอมอร กิ่งคาร"}, {"password": "BT-0371", "tax_last4": "5974", "name": "นิติชญา กลางคาร"}, {"password": "BT-0372", "tax_last4": "4241", "name": "พรไพลิน สุดจริง"}, {"password": "BT-0373", "tax_last4": "4381", "name": "อัจฉริยจักร ผาสุข"}, {"password": "BT-0374", "tax_last4": "5029", "name": "อารยา วิทยากาญจน์"}, {"password": "BT-0375", "tax_last4": "7018", "name": "พีรยา เหล่าจันดา"}, {"password": "BT-0376", "tax_last4": "8573", "name": "เฌองาม ลิ้มประเสริฐ"}, {"password": "BT-0377", "tax_last4": "4437", "name": "ปัญนันท์ภัชญ์ แสนประดิษฐ์"}, {"password": "BT-0378", "tax_last4": "2998", "name": "นภสร ไชยแสน"}, {"password": "BT-0379", "tax_last4": "4827", "name": "ปวีณ์ธิดา ไร่วิบูลย์"}, {"password": "BT-0380", "tax_last4": "4258", "name": "พรพิมล เข็มลา"}, {"password": "BT-0381", "tax_last4": "4392", "name": "กันต์กนิษฐ์ อินทะนพ"}, {"password": "BT-0382", "tax_last4": "9558", "name": "ชนกนันท์ แก้วเกตุ"}, {"password": "BT-0383", "tax_last4": "6391", "name": "จงจิต เพชรอินทร์"}, {"password": "BT-0384", "tax_last4": "6001", "name": "ฐิติทัช ซองทุมมินทร์"}, {"password": "BT-0385", "tax_last4": "0147", "name": "วรกานต์ รับจันทร์"}, {"password": "BT-0386", "tax_last4": "0479", "name": "ณัฐชา ฉายศรีวรรณ"}, {"password": "BT-0387", "tax_last4": "0971", "name": "ปรวีย์ ฮ่องสาย"}, {"password": "BT-0388", "tax_last4": "5951", "name": "ชรินรัตน์ สิทธิรัตน์"}, {"password": "BT-0389", "tax_last4": "9783", "name": "พจมาน พรหมงาม"}, {"password": "BT-0390", "tax_last4": "6232", "name": "ดาวอนงค์ พงษ์ขาว"}, {"password": "BT-0391", "tax_last4": "3935", "name": "ณิชาภัทร สุวรรณจ้อย"}, {"password": "BT-0392", "tax_last4": "3380", "name": "พณิชา จิตนารินทร์"}, {"password": "BT-0393", "tax_last4": "5277", "name": "ภูมิพิทักษ์ รักเรือง"}, {"password": "BT-0394", "tax_last4": "7231", "name": "ธมนภัทร ตาแสน"}, {"password": "BT-0395", "tax_last4": "9281", "name": "ปริวรรต นนทศิลป์"}, {"password": "BT-0396", "tax_last4": "1451", "name": "ศศิวิมล สาระมาน"}, {"password": "BT-0397", "tax_last4": "9071", "name": "พีรพล ประสานเสียง"}, {"password": "BT-0398", "tax_last4": "6354", "name": "ปพัตรา กันยะมี"}, {"password": "BT-0399", "tax_last4": "0602", "name": "ณัฐชนนท์ ค้ำชู"}, {"password": "BT-0400", "tax_last4": "3518", "name": "จิณัฐตา เอมชาวนา"}, {"password": "BT-0401", "tax_last4": "6871", "name": "มณีพร จงรักษ์สิทธิกุล"}, {"password": "BT-0402", "tax_last4": "0319", "name": "นวพร ไชยนต์"}, {"password": "BT-0403", "tax_last4": "7672", "name": "อิสรียา ดวงคำ"}, {"password": "BT-0404", "tax_last4": "6231", "name": "จิรนันท์ ทำดี"}, {"password": "BT-0405", "tax_last4": "7731", "name": "กฤษณา กลาสี"}, {"password": "BT-0406", "tax_last4": "2839", "name": "วาสนา อำมาตย์มณี"}, {"password": "BT-0407", "tax_last4": "9836", "name": "ญาณิน เพอะละ"}, {"password": "BT-0408", "tax_last4": "2997", "name": "วิภาวรรณ ใจทิม"}, {"password": "BT-0409", "tax_last4": "5600", "name": "พีรณัฐ อนุสรณ์"}, {"password": "BT-0410", "tax_last4": "8070", "name": "ภัสษร สุขอาภา"}, {"password": "BT-0411", "tax_last4": "6529", "name": "โยษิตา โคตะลี"}, {"password": "BT-0412", "tax_last4": "3081", "name": "พิธา ไชยวงค์"}, {"password": "BT-0413", "tax_last4": "6789", "name": "ปาระมี วงษ์เวียน"}, {"password": "BT-0414", "tax_last4": "1783", "name": "วาสนา เชิงหอม"}, {"password": "BT-0415", "tax_last4": "7364", "name": "ปภัสสร ไชยทิง"}, {"password": "BT-0416", "tax_last4": "9736", "name": "ศุภกาญจน์ ถนอมศักดิ์"}, {"password": "BT-0417", "tax_last4": "7591", "name": "คณิน พินิจอุปพันธ์"}, {"password": "BT-0418", "tax_last4": "0907", "name": "ภัทราวดี รักสายสัมพันธ์"}, {"password": "BT-0419", "tax_last4": "3193", "name": "กิตติธัช ช่างประดับ"}, {"password": "BT-0420", "tax_last4": "0218", "name": "พรพิมล พาทิพย์"}, {"password": "BT-0421", "tax_last4": "1014", "name": "สุลาวัลย์ บุญยอด"}, {"password": "BT-0422", "tax_last4": "2662", "name": "ภัทรลดา ชินอักษร"}, {"password": "BT-0423", "tax_last4": "8583", "name": "ณดลกมล อำนวย"}, {"password": "BT-0424", "tax_last4": "8171", "name": "บุญญฤทธิ์ วู้ชัยภูมิ"}, {"password": "BT-0425", "tax_last4": "2258", "name": "เบญจมาพร ศรีแดง"}, {"password": "BT-0426", "tax_last4": "3261", "name": "วัชโรบล ภูวนาถ"}, {"password": "BT-0427", "tax_last4": "6685", "name": "นันทรัตน์ อนุสรานนท์"}, {"password": "BT-0428", "tax_last4": "6801", "name": "รามิล สามกษัตริย์"}, {"password": "BT-0429", "tax_last4": "5429", "name": "พรธิภา สุมนพันธ์"}, {"password": "BT-0430", "tax_last4": "5429", "name": "พรธิภา สุมนพันธุ์"}, {"password": "BT-0431", "tax_last4": "2961", "name": "นภนันท์ พุ่มดารา"}, {"password": "BT-0432", "tax_last4": "9560", "name": "จารุพร โตเจริญ"}, {"password": "BT-0433", "tax_last4": "2799", "name": "สุดา สวัสดิ์อภิธรรม"}, {"password": "BT-0434", "tax_last4": "4241", "name": "กิตติพงศ์ หอมทวนลม"}, {"password": "BT-0435", "tax_last4": "4986", "name": "ณฤดี จันทวงศ์"}, {"password": "BT-0436", "tax_last4": "5696", "name": "พรรณราย วิโรจน์"}, {"password": "BT-0437", "tax_last4": "5696", "name": "สิรภัทร เศรษฐยานนท์"}, {"password": "BT-0438", "tax_last4": "0586", "name": "อดิศร พันธุ์จินดาวรรณ"}, {"password": "BT-0439", "tax_last4": "2824", "name": "อรอนงค์ ผุยมูลตรี"}, {"password": "BT-0440", "tax_last4": "6013", "name": "ธนพร จันทร์ศรี"}, {"password": "BT-0441", "tax_last4": "0314", "name": "อภิสรา กลีบบัว"}, {"password": "BT-0442", "tax_last4": "5724", "name": "สุภาภรณ์ นวชาตสกุล"}, {"password": "BT-0443", "tax_last4": "5331", "name": "ศรัญญา แสงเครือ"}, {"password": "BT-0444", "tax_last4": "4141", "name": "ชวัลญา สุธารธีระพงษ์"}, {"password": "BT-0445", "tax_last4": "3795", "name": "บุษราคัม สมพร้อม"}, {"password": "BT-0446", "tax_last4": "3135", "name": "จิรนนท์ โพธิ์สุวรรณ"}, {"password": "BT-0447", "tax_last4": "6864", "name": "สุธาทิพย์ สุขศรีนาค"}, {"password": "BT-0448", "tax_last4": "2836", "name": "กชกร วัฒนมีแก้ว"}, {"password": "BT-0449", "tax_last4": "7353", "name": "วนรรทธมนตร์ วฒสรร"}, {"password": "BT-0450", "tax_last4": "8205", "name": "สิริธรรม สมแก้ว"}, {"password": "BT-0451", "tax_last4": "7801", "name": "ศศิธร เจริญแก้ว"}, {"password": "BT-0452", "tax_last4": "3921", "name": "เมริยา จักขุมณี"}, {"password": "BT-0453", "tax_last4": "4325", "name": "เทพฤทธิ์ อุ่นยวง"}, {"password": "BT-0454", "tax_last4": "8645", "name": "หัตถพร หัตถิ"}, {"password": "BT-0455", "tax_last4": "9154", "name": "ณัฐวดี นวลรอด"}, {"password": "BT-0456", "tax_last4": "2391", "name": "โชคอนันต์ รักทรัพย์"}, {"password": "BT-0457", "tax_last4": "8642", "name": "กมลชนก กัลยา"}, {"password": "BT-0458", "tax_last4": "0696", "name": "วริญญา ศรีชาย"}, {"password": "BT-0459", "tax_last4": "2388", "name": "บุญฑริกา บุญบำรุง"}, {"password": "BT-0460", "tax_last4": "0416", "name": "ปีย์วรา กี่ประเสริฐพงศ์"}, {"password": "BT-0461", "tax_last4": "1559", "name": "กิรณา ว่องนิติธรรม"}, {"password": "BT-0462", "tax_last4": "8948", "name": "เสือ อิทธิวราภรณ์กุล"}, {"password": "BT-0463", "tax_last4": "9759", "name": "จิรัชญา ศรีสว่าง"}, {"password": "BT-0464", "tax_last4": "1798", "name": "สรัลชนา กลางนุรักษ์"}, {"password": "BT-0465", "tax_last4": "3259", "name": "เวทิตา เลี่ยมแก้ว"}, {"password": "BT-0466", "tax_last4": "9374", "name": "ภัทราวดี จันทร์ปลี"}, {"password": "BT-0467", "tax_last4": "0811", "name": "วันพรรษา ยมทัศน์"}, {"password": "BT-0468", "tax_last4": "5587", "name": "รติชา นุชนงค์"}, {"password": "BT-0469", "tax_last4": "5587", "name": "สุนิษา นุชนงค์"}, {"password": "BT-0470", "tax_last4": "7259", "name": "นารีรัตน์ แซ่โค้ว"}, {"password": "BT-0471", "tax_last4": "8891", "name": "อรวี ศรีษะสม"}, {"password": "BT-0472", "tax_last4": "7451", "name": "กัญญาวีร์ เซ่งเส้ง"}, {"password": "BT-0473", "tax_last4": "2156", "name": "วรรณี ภาณุเมธา"}, {"password": "BT-0474", "tax_last4": "4750", "name": "บุญชรัศมิ์ กุลศรีวนรัตน์"}, {"password": "BT-0475", "tax_last4": "4750", "name": "ปุญชรัศมิ์ กุลศรีวนรัตน์"}, {"password": "BT-0476", "tax_last4": "8591", "name": "ชิดชม ไชยถาวร"}, {"password": "BT-0477", "tax_last4": "2616", "name": "ชนินาถ แซ่เล้า"}, {"password": "BT-0478", "tax_last4": "5480", "name": "อัซวานีย์ หมัดอะดัม"}, {"password": "BT-0479", "tax_last4": "1002", "name": "กมลชนก หมุดเส็ม"}, {"password": "BT-0480", "tax_last4": "9251", "name": "มารีณีย์ ซี่เลี่ยง"}, {"password": "BT-0481", "tax_last4": "2955", "name": "กรุณา กุญชรินทร์"}, {"password": "BT-0482", "tax_last4": "1981", "name": "ชัญญานุช ปักษี"}, {"password": "BT-0483", "tax_last4": "7132", "name": "รุสลัน นิสนิ"}, {"password": "BT-0484", "tax_last4": "0561", "name": "จัสมีน ซาหีมซา"}, {"password": "BT-0485", "tax_last4": "9355", "name": "อชิระ เจ๊ะอุบง"}, {"password": "BT-0486", "tax_last4": "9360", "name": "อูซามะห์ ปูโจะอูมง"}, {"password": "BT-0487", "tax_last4": "1220", "name": "สิริกาณณ์ ทองมาก"}, {"password": "BT-0488", "tax_last4": "7708", "name": "ณัฐชญา ฉายะวิวัฒน์"}, {"password": "BT-0489", "tax_last4": "9801", "name": "อัรดียานี หะยีดาลี"}, {"password": "BT-0490", "tax_last4": "9482", "name": "ฉัฑริกา ปรานช่วย"}, {"password": "BT-0491", "tax_last4": "3529", "name": "จิรฐา สนิทวงศ์ชัย"}, {"password": "BT-0492", "tax_last4": "7602", "name": "ชุติกาญจน์ เหล่าประเสริฐศิริ"}, {"password": "BT-0493", "tax_last4": "7602", "name": "ชุติกาญจน์ อภิบาลวรกุล"}, {"password": "BT-0494", "tax_last4": "5305", "name": "ยลรดี เขาแก้ว"}, {"password": "BT-0495", "tax_last4": "9525", "name": "ปุณฑริกา วงศ์ชะนา"}, {"password": "BT-0496", "tax_last4": "8479", "name": "เพียงเพ็ญ แก้วกนก"}, {"password": "BT-0497", "tax_last4": "1204", "name": "พัชอาภา รณชาติชัย"}, {"password": "BT-0498", "tax_last4": "4083", "name": "ญทิษา ภิภัทรเรืองสกุล"}, {"password": "BT-0499", "tax_last4": "6681", "name": "ศิริวรรณ ฉายางามมงคล"}, {"password": "BT-0500", "tax_last4": "1697", "name": "กันต์ อาลัยญาติ"}, {"password": "BT-0501", "tax_last4": "3531", "name": "จารุชา รัชภิญญมาศ"}, {"password": "BT-0502", "tax_last4": "7788", "name": "สุชาย ตติยภัณฑรักษ์"}, {"password": "BT-0503", "tax_last4": "4944", "name": "สุขไล ฉนวนวรวิถี"}, {"password": "BT-0504", "tax_last4": "2303", "name": "คงพันธุ์ อภิชาตบุตร์"}, {"password": "BT-0505", "tax_last4": "7723", "name": "รัชดา ชื่นจิตอภิรมย์"}, {"password": "BT-0506", "tax_last4": "0594", "name": "อัญชลี แก้วแหวน"}, {"password": "BT-0507", "tax_last4": "6065", "name": "รัตนา เตชมณีวงศ์"}, {"password": "BT-0508", "tax_last4": "9951", "name": "ศานติภาพ พรประภากร"}, {"password": "BT-0509", "tax_last4": "6161", "name": "เบญจวรรณ ศรีปรีดาพร"}, {"password": "BT-0510", "tax_last4": "8173", "name": "พิชานัน ยะเกษม"}, {"password": "BT-0511", "tax_last4": "1112", "name": "ฑิชา แก้วสถิตย์"}, {"password": "BT-0512", "tax_last4": "6395", "name": "กัญจน์กนก สูนกำเหนิด"}, {"password": "BT-0513", "tax_last4": "3469", "name": "ปณิตตา วัชรนพวิภา"}, {"password": "BT-0514", "tax_last4": "1610", "name": "อธิตานันท์ ลิ้มสังคมเลิศ"}, {"password": "BT-0515", "tax_last4": "0481", "name": "นารี เสร็จกิจ"}, {"password": "BT-0516", "tax_last4": "2992", "name": "ต่อสกุล นิตทิม"}, {"password": "BT-0517", "tax_last4": "7986", "name": "เกศริน ฟิลด์"}, {"password": "BT-0518", "tax_last4": "7469", "name": "ภัคจิรา รัชตะสังข์"}, {"password": "BT-0519", "tax_last4": "7897", "name": "อริชัย วรรธนะภัฏ"}, {"password": "BT-0520", "tax_last4": "6211", "name": "รัฐนันท์ อภิพัฒนะมนตรี"}, {"password": "BT-0521", "tax_last4": "8849", "name": "ธนนุช สุขศิริ"}, {"password": "BT-0522", "tax_last4": "5541", "name": "ปกิตตา ดุลยปวีณ"}, {"password": "BT-0523", "tax_last4": "1034", "name": "ภาวิณี ศิลาชัย"}, {"password": "BT-0524", "tax_last4": "3610", "name": "ปิ่นลดา ธรรมเกษร"}, {"password": "BT-0525", "tax_last4": "4115", "name": "นิธินันท์ เทศมาลาพงศ์"}, {"password": "BT-0526", "tax_last4": "5139", "name": "สุชาดา สืบมงคลชัย"}, {"password": "BT-0527", "tax_last4": "5846", "name": "วิไล จันทร์วัฒนพงษ์"}, {"password": "BT-0528", "tax_last4": "6074", "name": "รินมนัส ศิลปชัยเรือง"}, {"password": "BT-0529", "tax_last4": "0100", "name": "ธำรงเดช เดชพรหม"}, {"password": "BT-0530", "tax_last4": "4829", "name": "ชุติพนธ์ ตู้ธนบัตร"}, {"password": "BT-0531", "tax_last4": "1189", "name": "ภัทรสิดา เบญจศิรภัช"}, {"password": "BT-0532", "tax_last4": "1893", "name": "ณัฏฐา เเซ่หว่อง"}, {"password": "BT-0533", "tax_last4": "1893", "name": "ณัฏฐา แซ่หว่อง"}, {"password": "BT-0534", "tax_last4": "4827", "name": "สุกัญญา ผลวิชา"}, {"password": "BT-0535", "tax_last4": "7375", "name": "ศิริธิดา วรรณไชย"}, {"password": "BT-0536", "tax_last4": "8848", "name": "ศิริพร จันทรพิพัฒน์"}, {"password": "BT-0537", "tax_last4": "7818", "name": "ชุตินันท์ ไชยศิลป์"}, {"password": "BT-0538", "tax_last4": "5229", "name": "วรันย์กานต์ แก้วอินชัย"}, {"password": "BT-0539", "tax_last4": "5435", "name": "มยุรี แซ่ท้าว"}];
 
-    // หมายเหตุ: เนื่องจากข้อความในแชทมีขีดจำกัด ผมแนะนำให้ใช้สูตร Excel ที่เคยให้ 
-    // เพื่อนำข้อมูลทั้ง 539 คนมาวางลงใน [ ] ด้านบนนี้ครับ
+function normalize(str) {
+  return str.trim().replace(/\s+/g, ' ');
+}
 
-    function check() {
-        const nInput = document.getElementById('nameIn').value.replace(/\s+/g, '').trim();
-        const tInput = document.getElementById('taxIn').value.trim();
-        const res = document.getElementById('result');
+function searchPassword() {
+  const nameRaw = document.getElementById('nameInput').value;
+  const taxRaw  = document.getElementById('taxInput').value.trim();
+  const resultBox = document.getElementById('resultBox');
 
-        const found = db.find(r => r[0] === nInput && r[1] === tInput);
+  const name = normalize(nameRaw);
+  const tax  = taxRaw;
 
-        res.style.display = 'block';
-        if (found) {
-            res.className = 'success';
-            res.innerHTML = `พบข้อมูล!<br>รหัสผ่านของคุณคือ:<br><span class="pw">${found[2]}</span>`;
-        } else {
-            res.className = 'error';
-            res.innerText = 'ไม่พบข้อมูล กรุณาตรวจสอบชื่อหรือเลขท้าย 4 ตัวอีกครั้ง';
-        }
-    }
+  if (!name) {
+    showError('กรุณากรอกชื่อ - นามสกุล', '');
+    return;
+  }
+  if (taxRaw.length !== 4 || !/^\d{4}$/.test(taxRaw)) {
+    showError('กรุณากรอกเลขผู้เสียภาษี 4 หลักให้ครบถ้วน', 'ตัวอย่าง: 1234');
+    return;
+  }
 
-    // Canvas Background Animation
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let offset = 0;
-    function render() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        for (let i = 0; i < 7; i++) {
-            ctx.beginPath();
-            ctx.strokeStyle = `hsla(${offset + (i * 40)}, 80%, 85%, 0.5)`;
-            ctx.lineWidth = 150;
-            ctx.moveTo(0, canvas.height * 0.1 + (i * 100));
-            for (let x = 0; x <= canvas.width; x += 15) {
-                const y = Math.sin(x * 0.002 + (offset * 0.005) + i) * 60 + (canvas.height * 0.4);
-                ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
-        offset++;
-        requestAnimationFrame(render);
-    }
-    render();
+  const match = DB.find(r =>
+    normalize(r.name).toLowerCase() === name.toLowerCase() &&
+    r.tax_last4 === tax
+  );
+
+  if (match) {
+    showSuccess(match);
+  } else {
+    showError(
+      'ไม่พบข้อมูล กรุณาตรวจสอบอีกครั้ง',
+      'ชื่อ-นามสกุล หรือ เลขผู้เสียภาษีอาจไม่ถูกต้อง'
+    );
+  }
+}
+
+function showSuccess(record) {
+  const box = document.getElementById('resultBox');
+  box.className = 'result show';
+  box.innerHTML = `
+    <div class="result-success">
+      <div class="result-label">✅ พบข้อมูลเรียบร้อย</div>
+      <div class="result-name">👤 ${record.name}</div>
+      <div class="password-display">
+        <span class="password-value" id="pwVal">${record.password}</span>
+        <button class="copy-btn" onclick="copyPW('${record.password}')" id="copyBtn">📋 คัดลอก</button>
+      </div>
+    </div>
+  `;
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showError(msg, sub) {
+  const box = document.getElementById('resultBox');
+  box.className = 'result show';
+  box.innerHTML = `
+    <div class="result-error">
+      <div class="err-icon">🌧️</div>
+      <div class="err-title">${msg}</div>
+      ${sub ? `<div class="err-msg">${sub}</div>` : ''}
+    </div>
+  `;
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyPW(pw) {
+  navigator.clipboard.writeText(pw).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ คัดลอกแล้ว!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 คัดลอก';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = pw;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  });
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') searchPassword();
+});
+
+document.getElementById('taxInput').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g, '').slice(0, 4);
+});
 </script>
 </body>
 </html>
